@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Seeds in the Building Forest — Showcase</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+  /* ===== Korean font import MUST be first ===== */
+  @import url('https://cdn.jsdelivr.net/npm/galmuri@latest/dist/galmuri.css');
+
+  /* Global font: DepartureMono (kept for Latin/monospace feel) */
+  @font-face {
+    font-family: 'DepartureMono';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/2409-1@1.0/DepartureMono-Regular.woff2') format('woff2');
+    font-weight: normal; font-display: swap;
+  }
+
+  :root{
+    --bg:#0e0f11; --ink:#e9f5ea; --muted:#a7b1a9; --frame:#2a2d2a;
+    --accent:#7cffac; --accent2:#8ee9c2; --hot:#f45b69; --cool:#6fb1ff;
+  }
+
+  /* Prefer Galmuri for Korean text, fall back to DepartureMono for Latin */
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
+    font-family:'Galmuri11','Galmuri9','DepartureMono',ui-monospace,Menlo,Consolas,monospace}
+  
+  /* If you want headings strictly in Galmuri: */
+  h1,h2,h3,h4,h5,h6{font-family:'Galmuri11','Galmuri9','DepartureMono',ui-monospace,Menlo,Consolas,monospace}
+
+  a{color:var(--accent)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+  .section{position:relative;padding:96px 0;border-bottom:1px solid var(--frame)}
+  .hero{min-height:68vh;display:grid;place-items:center;text-align:center}
+  h1{font-size:clamp(28px,5vw,56px);margin:12px 0}
+  h2{font-size:clamp(22px,3.2vw,36px);margin:0 0 12px}
+  p{font-size:clamp(18px,3vw,25px);line-height:1.6;color:var(--muted)}
+  .btn{display:inline-block;margin-top:18px;padding:12px 18px;border-radius:10px;border:1px solid #2f3; background:linear-gradient(180deg,rgba(20,40,20,.45),rgba(10,20,10,.25)); color:var(--ink);cursor:pointer}
+
+  /* Neon title */
+  .neon{letter-spacing:.5px;text-shadow:0 0 6px rgba(120,255,160,.65),0 0 12px rgba(120,255,160,.55),0 0 18px rgba(60,220,160,.55),0 0 28px rgba(60,220,160,.45);animation:neon 2.8s ease-in-out infinite}
+  @keyframes neon{50%{text-shadow:0 0 10px rgba(120,255,200,.9),0 0 20px rgba(120,255,200,.8),0 0 30px rgba(60,220,160,.8),0 0 46px rgba(60,220,160,.7)}}
+
+  /* Stage frame for game */
+  .stage{position:relative;width:960px;max-width:100%;margin:24px auto;border:8px solid rgba(200,220,200,.2);border-radius:12px;overflow:hidden}
+  .pin{position:sticky;top:0}
+
+  /* Flash-like micro interaction */
+  .flashStage{height:360px;background:linear-gradient(180deg,#1a1b1d,#0e0f11);display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;padding:16px;border-radius:12px;border:1px dashed #334}
+  .grove,.lot{height:300px;border-radius:10px;position:relative;overflow:hidden;background:#132}
+  .lot{background:#222}
+  .tree{position:absolute;bottom:0;left:var(--x,0);width:28px;height:90px;background:#6f5a3a;border-radius:6px 6px 0 0;box-shadow:0 0 0 2px rgba(0,0,0,.2) inset}
+  .tree::after{content:"";position:absolute;bottom:60px;left:-10px;width:48px;height:48px;background:#7cc36b;border-radius:50%}
+  .bld{position:absolute;bottom:0;left:var(--x,0);width:52px;height:var(--h,180px);background:linear-gradient(#2f3238,#1e2025);border:1px solid #0003;border-radius:4px}
+  .hint{position:absolute;right:12px;top:12px;font-size:12px;color:#9ab}
+  .divider{height:2px;background:linear-gradient(90deg,transparent,#3a3d44,transparent);margin:18px 0}
+
+  .copy{font-size:clamp(18px,2.2vw,26px);line-height:1.7;color:#cfe7d6}
+  .line{opacity:.86;margin:12px 0}
+  .muted{color:#93a39b}
+
+  .resultCard{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:18px}
+  .card{border:1px solid #2d3330;background:rgba(10,20,10,.35);backdrop-filter:blur(2px);border-radius:10px;padding:12px}
+
+  .cta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .cta a.btn{border-color:#49f}
+
+  .small{font-size:12px;color:#8aa}
+  /* ===== Scroll reveal / parallax ===== */
+  .reveal{opacity:0;transform:translate3d(0,12px,0) scale(.985);filter:blur(6px);
+    transition:transform .8s cubic-bezier(.2,.7,.2,1), opacity .8s ease, filter .8s ease}
+  .reveal.is-in{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+  .reveal.from-left{transform:translate3d(-24px,0,0)}
+  .reveal.from-right{transform:translate3d(24px,0,0)}
+  .reveal.from-up{transform:translate3d(0,24px,0)}
+  [data-parallax][data-speed]{will-change:transform}
+</style>
+</head>
+<body>
+  <header class="section hero">
+    <div class="wrap">
+      <h1 class="neon">Seeds in the Building Forest</h1>
+      <p>설명 텍스트...</p>
+      <button class="btn" id="startBtn">시작하기</button>
+      <div class="small" id="audioHint"></div>
+    </div>
+  </header>
+
+  <!-- 1) Flash-like micro interaction: 베기 → 빌딩 세우기 -->
+  <section class="section">
+    <div class="wrap">
+      <h2>우린 숲을 없애고, 숲을 닮은 구조물을 세웠다.</h2>
+      <div class="flashStage" id="flashStage">
+        <div class="grove" id="grove">
+          <div class="hint">클릭+드래그: 나무 베기</div>
+        </div>
+        <div class="lot" id="lot">
+          <div class="hint">클릭: 빌딩 올리기</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="copy">
+        <div class="line">콘크리트와 유리의 숲</div>
+        <div class="line muted">자연의 은유를 훔친 인공물 속에서</div>
+        <div class="line">인간은 자연의 질서를 대체한다고 믿지만,</div>
+        <div class="line">자연의 기능을 갈망하고, 소비할 뿐이다.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2) Scroll storytelling pins -->
+  <section class="section pin">
+    <div class="wrap">
+      <h2 class="neon">도시는 뜨거워졌다</h2>
+      <p>그 열을 식히는 것도 또 다른 열이었다.
+        <br> 녹지가 사라지며 열섬은 심화되었고, 
+        <br>도시는 온도를 낮추기 위해 에너지를 폭식한다.
+      </p>
+      <div class="stage" id="uhiStage" aria-label="UHI-compare">
+        
+        <div id="uhiBefore" style="position:absolute;inset:0;background:url('./uhi_before.png') center/cover no-repeat, linear-gradient(135deg,#222,#111);"></div>
+        <div id="uhiAfter"  style="position:absolute;inset:0;background:url('./uhi_after.png') center/cover no-repeat, linear-gradient(135deg,#333,#111);clip-path:inset(0 50% 0 0);"></div>
+        <input id="slider" type="range" min="0" max="100" value="50" style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);width:60%"/>
+      </div>
+      <p class="small"></p>
+    </div>
+  </section>
+  <!-- NEW: Paradox micro-interactions (small text) -->
+<section class="section paradox micro" id="paradoxSec">
+  <div class="wrap">
+    <h2>도시의 역설들</h2>
+    <p> 도시가 스스로 만든 문제를 또 다른 기술과 인공 시스템으로 해결하려 할 때 생기는 자기모순</p>
+
+    <div class="grid">
+      <!-- 1. 에너지를 쓰며 열을 내리는 도시 -->
+      <div class="tile" id="t1">
+        <h3>1) 에너지를 쓰며 열을 내리는 도시</h3>
+        <p class="msg">“도시는 열을 식히기 위해 더 많은 열을 만든다.”
+          <br>에어컨을 눌러 온도를 낮추는 인터랙션.
+          <br>하지만 일정 수치 이상에선 도시 전체가 더 뜨거워진다.</p>
+        <div class="stageSm">
+          
+        </div>
+        <div class="row" style="margin-top:8px">
+        </div>
+      </div>
+
+      <div class="tile" id="t2">
+        <h3>2) 성장과 행복의 역설</h3>
+        <p class="msg">개발이 사람들을 행복하게 하지만, 동시에 불행하게 한다.
+          <br>클릭할 때마다 빌딩이 세워지고 행복지수 ↑.
+        <br>그러나 일정 높이 이상에선 공원·빛·녹지 ↓.</p>
+       
+        </div>
+      </div>
+
+      <!-- 3. 도시의 인공자연 -->
+      <div class="tile" id="t3">
+        <h3>3) 도시의 인공자연</h3>
+        <p class="msg">“우린 자연을 모방하지만, 결코 자연이 아니다.”
+          <br> 화면에 있는 나무를 클릭할수록 나무 색조가 네온톤으로 변하며 ‘인공 생명체’처럼 보인다.</p>
+        <div class="stageSm" id="t3Stage">
+          <div id="t3Tree"></div>
+          
+        </div>
+        <div class="row" style="margin-top:8px">
+          <span></span><div class="meter" style="flex:1"><div id="t3Neon" class="fill"></div></div>
+        </div>
+      </div>
+
+      <div class="tile" id="t4">
+        <h3>4) 빛의 도시, 그림자의 도시</h3>
+        <p class="msg">“빛을 밝힐수록 어둠도 짙어진다.”
+        <br>클릭하면 가로등/건물 불빛이 켜지고 동시에 하늘이 어두워지며 별빛이 사라진다.</p>
+        <div class="stageSm" id="t4Stage">
+          <div id="t4Sky">
+            <canvas id="stars" width="600" height="300"></canvas>
+            <div id="lights"></div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- 3) Game embed -->
+  <section class="section">
+    <div class="wrap">
+      <h2>이 도시를 숨쉬게 할 수 있을까?</h2>
+      <p>게임 삽입</p>
+      <div class="stage">
+        <!-- Use a relative path; DO NOT use file:/// absolute paths when serving over http(s) -->
+        <iframe id="gameFrame" title="game" src="./game.html" width="960" height="540" style="display:block;margin:0 auto;border:0"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4) Result + 데이터 계산 카드 -->
+  <section class="section">
+    <div class="wrap">
+      <h2>결과</h2>
+      <p>당신의 플레이 결과는 현실의 도시 데이터와 이렇게 대응됩니다.</p>
+      <div class="resultCard">
+        <div class="card">
+          <div>Green Ratio</div>
+          <div id="grVal" style="font-size:32px;color:var(--accent)">–</div>
+        </div>
+        <div class="card">
+          <div>예상 지면온도 감소 (ΔT)</div>
+          <div id="dtVal" style="font-size:32px;color:var(--cool)">–</div>
+          <div class="small">* 데모 계수: −2.0°C @ 100%</div>
+        </div>
+        <div class="card">
+          <div>연간 CO₂ 흡수 추정</div>
+          <div id="co2Val" style="font-size:28px;color:#b7f58e">–</div>
+          <div class="small">* 데모 계수: 25kg × (나무 수)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>그린 인프라를 위한 실천 과제</h2>
+      <p>일상생활에서 실천할 과제들을 선택해 보세요.</p>
+      <div class="cta">
+        <a class="btn" href="링크">실천 과제</a>
+        <span class="small">외부 링크</span>
+      </div>
+    </div>
+  </section>
+
+<script>
+// ====== Simple audio (user gesture needed) ======
+let bgm;
+function ensureAudio(){
+  if(bgm) return; try{
+    bgm = new Audio('./bgm.mp3');
+    bgm.loop = true; bgm.volume = 0.6; bgm.play().catch(()=>{});
+  }catch(e){}
+}
+
+// Start button: kick audio + gentle scroll
+const startBtn = document.getElementById('startBtn');
+startBtn.addEventListener('click',()=>{
+  ensureAudio();
+  document.getElementById('audioHint').textContent = '재생 중';
+  window.scrollTo({top: window.innerHeight*0.9, behavior:'smooth'});
+});
+
+// ====== Flash-like micro interaction ======
+const grove = document.getElementById('grove');
+const lot = document.getElementById('lot');
+let trees = [];
+// spawn initial trees
+for(let i=0;i<18;i++){
+  const t = document.createElement('div');
+  t.className='tree'; t.style.setProperty('--x', (10+i*40)+'px');
+  grove.appendChild(t); trees.push(t);
+}
+let dragging=false; let cutIdx=null;
+
+grove.addEventListener('pointerdown',e=>{dragging=true; cutAt(e)});
+
+grove.addEventListener('pointermove',e=>{if(dragging) cutAt(e)});
+window.addEventListener('pointerup',()=>dragging=false);
+
+function cutAt(e){
+  const rect=grove.getBoundingClientRect();
+  const x=e.clientX-rect.left; // choose nearest
+  let idx=Math.round((x-10)/40); idx=Math.max(0,Math.min(trees.length-1,idx));
+  const el=trees[idx]; if(!el || el._cut) return;
+  el._cut=true; el.style.transition='transform .25s, opacity .25s';
+  el.style.transform='translateY(40px) rotate(8deg)'; el.style.opacity='0.2';
+  // build on lot
+  const b=document.createElement('div'); b.className='bld';
+  b.style.setProperty('--x', (12+idx*40)+'px'); b.style.setProperty('--h', (140+Math.random()*140)+'px');
+  lot.appendChild(b);
+}
+
+// ====== UHI slider (before/after compare) ======
+const uhiAfter = document.getElementById('uhiAfter');
+const slider = document.getElementById('slider');
+slider.addEventListener('input',()=>{
+  const r = +slider.value; // 0..100 shows after portion
+  uhiAfter.style.clipPath = `inset(0 ${100-r}% 0 0)`;
+});
+
+// ====== Game result handshake ======
+// 옵션 1) iframe 내 게임에서 postMessage로 결과 전달 {type:'GAME_RESULT', greenRatio, trees}
+window.addEventListener('message', (ev)=>{
+  const msg = ev.data || {}; if(msg.type!=="GAME_RESULT") return;
+  const gr = Math.max(0, Math.min(1, msg.greenRatio||0));
+  const tempDrop = (gr*2.0); // demo coeff: 100% -> -2.0°C
+  const co2 = Math.round((msg.trees||0)*25);
+  document.getElementById('grVal').textContent = Math.round(gr*100)+'%';
+  document.getElementById('dtVal').textContent = `−${tempDrop.toFixed(2)} °C`;
+  document.getElementById('co2Val').textContent = `${co2.toLocaleString()} kg/yr`;
+});
+
+// 옵션 2) 같은 문서에 게임을 넣을 경우, 게임 스크립트가 아래 함수를 호출
+window.reportGameResult = function({greenRatio=0, trees=0}){
+  const gr = Math.max(0, Math.min(1, greenRatio));
+  const tempDrop = (gr*2.0);
+  const co2 = Math.round(trees*25);
+  document.getElementById('grVal').textContent = Math.round(gr*100)+'%';
+  document.getElementById('dtVal').textContent = `−${tempDrop.toFixed(2)} °C`;
+  document.getElementById('co2Val').textContent = `${co2.toLocaleString()} kg/yr`;
+}
+// ===== Scroll reveal + parallax (sensory) =====
+(function(){
+  function addReveal(selector, cls){
+    document.querySelectorAll(selector).forEach(el=>el.classList.add('reveal', ...cls.split(' ')));
+  }
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // Headings & lead paragraphs
+    addReveal('h1, h2, .section h2 + p', 'from-up');
+
+    // Copy lines: alternate left/right, stagger, parallax speed
+    const lines = document.querySelectorAll('.copy .line');
+    lines.forEach((el,i)=>{
+      el.classList.add('reveal', i%2? 'from-right':'from-left');
+      el.style.transitionDelay = (i*80)+'ms';
+      el.dataset.parallax='y';
+      el.dataset.speed = (0.08 + (i%3)*0.02).toFixed(2);
+    });
+
+    // Observe and reveal
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal').forEach(el=> io.observe(el));
+
+    // Parallax loop (lightweight)
+    const pxEls = Array.from(document.querySelectorAll('[data-parallax]'));
+    if(pxEls.length){
+      const tick = ()=>{
+        const vh = window.innerHeight;
+        for(const el of pxEls){
+          const r = el.getBoundingClientRect();
+          const speed = parseFloat(el.dataset.speed||0.1);
+          const axis = (el.dataset.parallax||'y').toLowerCase();
+          const p = ((vh - r.top) / (vh + r.height)) - 0.5; // -0.5..0.5 around viewport
+          const t = p * 120 * speed;
+          const tx = axis==='x'?`translateX(${t.toFixed(1)}px)`:`translateY(${t.toFixed(1)}px)`;
+          el.style.transform = tx;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
+  });
+})();
+</script>
+</body>
+</html>
